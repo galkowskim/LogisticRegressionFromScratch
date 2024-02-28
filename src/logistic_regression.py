@@ -1,4 +1,5 @@
 import numpy as np
+from src.optimization_algorithms import sgd_optimization
 
 
 class LogisticRegression:
@@ -15,44 +16,32 @@ class LogisticRegression:
         self.tolerance = tolerance
         self.add_interactions = add_interactions
         self.optimizer = optimizer
-        self.interactions = []
-
-    def _add_interactions(self, X):
-        n_samples, n_features = X.shape
-        if self.add_interactions:
-            for i in range(n_features):
-                for j in range(i + 1, n_features):
-                    interaction = X[:, i] * X[:, j]
-                    self.interactions.append(interaction.reshape(-1, 1))
-            X = np.hstack((X, *self.interactions))
-        return X
 
     def _sigmoid(self, z):
         return 1 / (1 + np.exp(-z))
 
-    def _compute_gradient(self, X, y, weights):
+    def _compute_gradient(self, X, y):
         pass
 
     def _optimize(self, X, y):
+        if self.optimizer == "sgd":
+            sgd_optimization(self, X, y)
         pass
 
     def fit(self, X, y):
-        if self.add_interactions:
-            X = self._add_interactions(X)
-
+        
         self.weights = np.zeros(X.shape[1])
+        self.biases = 0
 
         for _ in range(self.max_iter):
             old_weights = np.copy(self.weights)
             self._optimize(X, y)
             if np.linalg.norm(self.weights - old_weights) < self.tolerance:
                 break
+        return 
 
     def predict(self, X):
-        if self.add_interactions:
-            X = self._add_interactions(X)
-
-        z = np.dot(X, self.weights)
+        z = np.dot(X, self.weights.reshape(-1,1)) + self.biases
         probabilities = self._sigmoid(z)
         predictions = np.where(probabilities >= 0.5, 1, 0)
         return predictions
