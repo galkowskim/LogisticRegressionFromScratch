@@ -34,9 +34,6 @@ class LogisticRegression:
     def _add_interactions(self, X: Union[np.ndarray, pd.DataFrame]) -> np.ndarray:
         _, n_features = X.shape
 
-        if not isinstance(X, np.ndarray):
-            X = X.to_numpy()
-
         interactions = []
         if self.add_interactions:
             for i in range(n_features):
@@ -52,7 +49,7 @@ class LogisticRegression:
     def _cross_entropy(self, y: np.ndarray, p: np.ndarray) -> float:
         return -np.sum(y * np.log(p) + (1 - y) * np.log(1 - p))
 
-    def _optimize(self, X: Union[np.ndarray, pd.DataFrame], y: np.ndarray) -> None:
+    def _optimize(self, X: np.ndarray, y: np.ndarray) -> None:
 
         if isinstance(self.optimizer, SGD):
             batch_size = 1
@@ -61,12 +58,8 @@ class LogisticRegression:
 
         for _ in tqdm(range(self.max_iter), desc="Optimizing"):
             indices = np.random.permutation(len(X))
-            if isinstance(X, np.ndarray):
-                X_shuffled = X[indices]
-                y_shuffled = y[indices]
-            else:
-                X_shuffled = X.iloc[indices]
-                y_shuffled = y.iloc[indices]
+            X_shuffled = X[indices]
+            y_shuffled = y[indices]
 
             old_weights = np.copy(self.weights)
 
@@ -89,8 +82,12 @@ class LogisticRegression:
             if np.linalg.norm(self.weights - old_weights) < self.tolerance:
                 print("Stopping criteria reached after ", _ + 1, " iterations")
                 break
+        return 
 
     def fit(self, X: Union[np.ndarray, pd.DataFrame], y: np.ndarray) -> None:
+        if not isinstance(X, np.ndarray):
+            X = X.to_numpy()
+        
         if self.add_interactions:
             X = self._add_interactions(X)
         X = np.insert(X, 0, 1, axis=1)
@@ -99,6 +96,8 @@ class LogisticRegression:
         self._optimize(X, y)
 
     def predict(self, X: Union[np.ndarray, pd.DataFrame]) -> np.ndarray:
+        if not isinstance(X, np.ndarray):
+            X = X.to_numpy()
 
         if self.weights is None:
             raise ValueError("Fit the model before prediction")
