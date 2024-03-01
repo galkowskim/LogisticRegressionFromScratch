@@ -1,17 +1,20 @@
-import pandas as pd
+import warnings
+
 import numpy as np
 import openml
-import warnings
+import pandas as pd
+
 warnings.filterwarnings("ignore")
+
 
 def prepare_data(openml_id, target_variable):
     df = openml.datasets.get_dataset(openml_id).get_data()[0]
-    if target_variable=='binaryClass':
-        df[target_variable] = df[target_variable].map({'N': 0, 'P': 1})
-    elif target_variable=='class:':
-        df[target_variable] = df[target_variable].map({'g': 0, 'h': 1})
+    if target_variable == "binaryClass":
+        df[target_variable] = df[target_variable].map({"N": 0, "P": 1})
+    elif target_variable == "class:":
+        df[target_variable] = df[target_variable].map({"g": 0, "h": 1})
     else:
-        df[target_variable] = pd.to_numeric(df[target_variable], errors='coerce') - 1
+        df[target_variable] = pd.to_numeric(df[target_variable], errors="coerce") - 1
     if df.isnull().mean().any() >= 0.1:
         for col in df.columns:
             if df[col].isnull().any():
@@ -26,19 +29,8 @@ def prepare_data(openml_id, target_variable):
                 collinear_vars.update(correlated_columns)
         collinear_vars.discard(target_variable)
         df.drop(collinear_vars, axis=1, inplace=True)
-        
+
     X = df.drop(target_variable, axis=1)
     y = df[target_variable]
 
     return X.to_numpy(), y.to_numpy()
-
-def add_interactions(X):
-    _, n_features = X.shape
-    interactions = []
-    for i in range(n_features):
-        for j in range(i + 1, n_features):
-            interaction = X[:, i] * X[:, j]
-            interactions.append(interaction.reshape(-1, 1))
-        X = np.hstack((X, *interactions))
-    return X
-
