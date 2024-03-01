@@ -82,12 +82,12 @@ class LogisticRegression:
             if np.linalg.norm(self.weights - old_weights) < self.tolerance:
                 print("Stopping criteria reached after ", _ + 1, " iterations")
                 break
-        return 
+        return
 
     def fit(self, X: Union[np.ndarray, pd.DataFrame], y: np.ndarray) -> None:
         if not isinstance(X, np.ndarray):
             X = X.to_numpy()
-        
+
         if self.add_interactions:
             X = self._add_interactions(X)
         X = np.insert(X, 0, 1, axis=1)
