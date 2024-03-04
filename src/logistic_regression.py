@@ -77,6 +77,8 @@ class LogisticRegression:
                 self.weights = self.optimizer.update(
                     self.weights,
                     batch_dw_sum / len(batch_X),
+                    batch_X,
+                    probabilities,
                 )
 
             if np.linalg.norm(self.weights - old_weights) < self.tolerance:
