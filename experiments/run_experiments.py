@@ -1,60 +1,109 @@
 import numpy as np
+import openml
 import pandas as pd
-from sklearn.discriminant_analysis import (LinearDiscriminantAnalysis,
-                                           QuadraticDiscriminantAnalysis)
+from sklearn.discriminant_analysis import (
+    LinearDiscriminantAnalysis,
+    QuadraticDiscriminantAnalysis,
+)
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import balanced_accuracy_score
 from sklearn.model_selection import train_test_split
-# from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 
 from src.logistic_regression import LogisticRegression
-from src.prepare_datasets import add_interactions, prepare_data
+from src.prepare_datasets import prepare_data
 
-datasets = {
+DATASETS = {
+    # small datasets
     1462: "Class",
     871: "binaryClass",
-    885: "binaryClass",
     1120: "class:",
-    994: "binaryClass",
-    1021: "binaryClass",
-    847: "binaryClass",
+    # big datasets
+    1510: "Class",
+    1050: "c",
+    1049: "c",
+    833: "binaryClass",
+    846: "binaryClass",
+    879: "binaryClass",
 }
 
 classifiers = {
-    "Logistic Regression (SGD) with interactions": LogisticRegression(
-        add_interactions=True, learning_rate=0.01, max_iter=1000, tolerance=1e-10
-    ),
-    "Logistic Regression (SGD)": LogisticRegression(
-        add_interactions=False, learning_rate=0.01, max_iter=100, tolerance=1e-10
-    ),
-    "Linear Discriminant Analysis": LinearDiscriminantAnalysis(),
-    "Quadratic Discriminant Analysis": QuadraticDiscriminantAnalysis(),
-    "Decision Tree": DecisionTreeClassifier(),
-    "Random Forest": RandomForestClassifier(),
+    "Logistic Regression (SGD) with interactions": {
+        "add_interactions": True,
+        "learning_rate": 0.01,
+        "max_iter": 500,
+        "tolerance": 1e-4,
+        "optimizer": "sgd",
+    },
+    "Logistic Regression (SGD)": {
+        "add_interactions": False,
+        "learning_rate": 0.01,
+        "max_iter": 500,
+        "tolerance": 1e-4,
+        "optimizer": "sgd",
+    },
+    "Logistic Regression (Adam) with interactions": {
+        "add_interactions": True,
+        "learning_rate": 0.01,
+        "max_iter": 500,
+        "tolerance": 1e-4,
+        "optimizer": "adam",
+    },
+    "Logistic Regression (Adam)": {
+        "add_interactions": False,
+        "learning_rate": 0.01,
+        "max_iter": 500,
+        "tolerance": 1e-4,
+        "optimizer": "adam",
+    },
+    "Logistic Regression (IRLS) with interactions": {
+        "add_interactions": True,
+        "learning_rate": 0.01,
+        "max_iter": 500,
+        "tolerance": 1e-4,
+        "optimizer": "irls",
+    },
+    "Logistic Regression (IRLS)": {
+        "add_interactions": False,
+        "learning_rate": 0.01,
+        "max_iter": 500,
+        "tolerance": 1e-4,
+        "optimizer": "irls",
+    },
+    "Linear Discriminant Analysis": LinearDiscriminantAnalysis,
+    "Quadratic Discriminant Analysis": QuadraticDiscriminantAnalysis,
+    "Decision Tree": DecisionTreeClassifier,
+    "Random Forest": RandomForestClassifier,
 }
 
 
-def compare_with_different_classifiers():
+def compare_with_different_classifiers(no_iters=10, test_size=0.2):
     # Compare the classification performance of logistic regression (try all 3 methods: IWLS, SGD, ADAM) and LDA, QDA, Decision tree and Random Forest.
     results = []
 
-    for i, (dataset_number, target_column) in enumerate(datasets.items(), start=1):
-        X, y = prepare_data(dataset_number, target_column)
+    for i, (dataset_number, target_column) in enumerate(DATASETS.items(), start=1):
+        df = openml.datasets.get_dataset(dataset_number).get_data()[0]
+
+        X, y = prepare_data(df, target_column)
         print(f"Dataset {i}:")
 
-        for name, model in list(classifiers.items())[1:]:
+        for name, params_or_model in list(classifiers.items())[1:]:
             accuracy = []
-            for split in np.arange(0.15, 0.41, 0.05):
+
+            if "Logistic Regression" in name:
+                model = LogisticRegression(**params_or_model)
+            else:
+                model = params_or_model()
+            print(f"Fitting model: {name}")
+            for split in range(no_iters):
                 X_train, X_test, y_train, y_test = train_test_split(
-                    X, y, test_size=split, random_state=None
+                    X, y, test_size=test_size, random_state=None
                 )
 
                 model.fit(X_train, y_train)
                 y_pred = model.predict(X_test)
                 accuracy.append(balanced_accuracy_score(y_test, y_pred))
             avg_accuracy = np.mean(accuracy)
-            # print(f'Avg of balanced_accuracy for {name} = {avg_accuracy:.3f}')
             results.append(
                 {
                     "Dataset": f"Dataset_{i}",
@@ -66,41 +115,6 @@ def compare_with_different_classifiers():
     return pd.DataFrame(results)
 
 
-def compare_w_wo_interactions():
-    # for small datasets, compare logistic regression with and without interactions
-    results = []
-
-    for i, (dataset_number, target_column) in enumerate(
-        list(datasets.items())[:3], start=1
-    ):
-        X, y = prepare_data(dataset_number, target_column)
-        print(f"Dataset {i}:")
-
-        for name, model in list(classifiers.items())[:2]:
-            accuracy = []
-            if model.add_interactions == True:
-                X = add_interactions(X)
-            X_train, X_test, y_train, y_test = train_test_split(
-                X, y, test_size=0.25, random_state=None
-            )
-
-            model.fit(X_train, y_train)
-            y_pred = model.predict(X_test)
-            accuracy = balanced_accuracy_score(y_test, y_pred)
-            # print(f'Balanced_accuracy for {name} = {accuracy:.3f}')
-            results.append(
-                {
-                    "Dataset": f"Dataset_{i}",
-                    "Classifier": name,
-                    "Balanced_Accuracy": accuracy,
-                }
-            )
-
-    return pd.DataFrame(results)
-
-
 if __name__ == "__main__":
-    results1 = compare_with_different_classifiers()
-    print(results1)
-    results2 = compare_w_wo_interactions()
-    print(results2)
+    results = compare_with_different_classifiers(1)
+    print(results)

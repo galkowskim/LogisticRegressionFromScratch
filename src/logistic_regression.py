@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-from optimization_algorithms import IRLS, SGD, AdamOptim
+from src.optimization_algorithms import IRLS, SGD, AdamOptim
 
 optimizers: Dict[str, Union[SGD, AdamOptim, IRLS]] = {
     "sgd": SGD,
@@ -46,8 +46,11 @@ class LogisticRegression:
     def _sigmoid(self, z: np.ndarray) -> np.ndarray:
         return 1 / (1 + np.exp(-z))
 
+    def _log_likelihood(self, y: np.ndarray, p: np.ndarray) -> float:
+        return np.sum(y * np.log(p) + (1 - y) * np.log(1 - p))
+
     def _cross_entropy(self, y: np.ndarray, p: np.ndarray) -> float:
-        return -np.sum(y * np.log(p) + (1 - y) * np.log(1 - p))
+        return -self._log_likelihood(y, p)
 
     def _optimize(self, X: np.ndarray, y: np.ndarray) -> None:
 
