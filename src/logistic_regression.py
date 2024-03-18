@@ -2,9 +2,8 @@ from typing import Dict, Union
 
 import numpy as np
 import pandas as pd
+from optimization_algorithms import IRLS, SGD, AdamOptim
 from tqdm import tqdm
-
-from src.optimization_algorithms import IRLS, SGD, AdamOptim
 
 optimizers: Dict[str, Union[SGD, AdamOptim, IRLS]] = {
     "sgd": SGD,
