@@ -1,8 +1,9 @@
 from typing import Dict, Union
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from optimization_algorithms import IRLS, SGD, AdamOptim
+from src.optimization_algorithms import IRLS, SGD, AdamOptim
 from tqdm import tqdm
 
 optimizers: Dict[str, Union[SGD, AdamOptim, IRLS]] = {
@@ -29,6 +30,7 @@ class LogisticRegression:
         self.weights: Union[None, np.ndarray] = None
         self.batch_size: Union[None, int] = batch_size
         self.optimizer = optimizers[optimizer](learning_rate)
+        self.history = []
 
     def _add_interactions(self, X: Union[np.ndarray, pd.DataFrame]) -> np.ndarray:
         _, n_features = X.shape
@@ -46,7 +48,8 @@ class LogisticRegression:
         return 1 / (1 + np.exp(-z))
 
     def _log_likelihood(self, y: np.ndarray, p: np.ndarray) -> float:
-        return np.sum(y * np.log(p) + (1 - y) * np.log(1 - p))
+        p = np.clip(p, 1e-15, 1 - 1e-15)
+        return np.sum(y * np.log(p) + (1 - y) * np.log(1 - p)) / len(y)
 
     def _cross_entropy(self, y: np.ndarray, p: np.ndarray) -> float:
         return -self._log_likelihood(y, p)
@@ -86,7 +89,19 @@ class LogisticRegression:
             if np.linalg.norm(self.weights - old_weights) < self.tolerance:
                 print("Stopping criteria reached after ", _ + 1, " iterations")
                 break
+
+            probabilities = self._sigmoid(np.dot(X, self.weights))
+            self.history.append(self._log_likelihood(y, probabilities))
         return
+
+    def plot_log_likelihood(self):
+        if self.history is None:
+            raise ValueError("Fit the model before plotting the log-likelihood values.")
+        plt.plot(range(len(self.history)), self.history)
+        plt.xlabel("Number of iterations")
+        plt.ylabel("Log-Likelihood")
+        plt.title("Log-Likelihood values after each iteration")
+        plt.show()
 
     def fit(self, X: Union[np.ndarray, pd.DataFrame], y: np.ndarray) -> None:
         if not isinstance(X, np.ndarray):
