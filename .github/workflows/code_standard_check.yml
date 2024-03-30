@@ -26,7 +26,7 @@ jobs:
       run: black --check .
       
     - name: Check Code with Flake8
-      run: flake8 --ignore=E501,W503,W605 .
+      run: flake8 --ignore=E203,E501,W503,W605 .
       
     - name: Check Imports with isort
       run: isort --check-only --profile black .
