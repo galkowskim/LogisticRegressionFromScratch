@@ -1,33 +1,13 @@
 import warnings
 
-import openml
-import pandas as pd
-
 warnings.filterwarnings("ignore")
 
 
-def prepare_data(df, target_variable):
-    mapping = {}
-
-    if target_variable == "binaryClass":
-        mapping = {"N": 0, "P": 1}
-    elif target_variable == "class:":
-        mapping = {"g": 0, "h": 1}
-    elif target_variable == "defect":
-        mapping = {True: 1, False: 0}
-    elif target_variable == "Target":
-        mapping = {"Normal": 0, "Anomaly": 1}
-    elif target_variable == "Class":
+def prepare_data(df, cast_to_int, mapping, target_variable):
+    if cast_to_int:
         df[target_variable] = df[target_variable].astype(int)
-        mapping = {1: 0, 2: 1}
-
     if mapping != {}:
         df[target_variable] = df[target_variable].replace(mapping)
-
-    # I want to assert that target variable have only 2 values: 0,1 -> create code for that
-    assert df[target_variable].nunique() == 2 and sorted(
-        list(df[target_variable].unique())
-    ) == [0, 1], df[target_variable].value_counts()
 
     # Filling missing values if column have more than 10% of NaNs
     for col in df.columns:
