@@ -19,18 +19,18 @@ from ucimlrepo import fetch_ucirepo
 DATASETS = {
     "ucl": {
         # big
-        # 151: ["class", {"R": 1, "M": 0}, False],
+        151: ["class", {"R": 1, "M": 0}, False],
     },
     "openml": {
         # small
-        # 974: ["binaryClass", {"N": 0, "P": 1}, False],  # small
-        # 969: ["binaryClass", {"N": 0, "P": 1}, False],  # small - iris
-        # 1462: ["Class", {1: 0, 2: 1}, True],
+        974: ["binaryClass", {"N": 0, "P": 1}, False],
+        969: ["binaryClass", {"N": 0, "P": 1}, False],  # iris
+        1462: ["Class", {1: 0, 2: 1}, True],
         # big
-        # 849: ["binaryClass", {"N": 0, "P": 1}, False],
-        # 1547: ["Class", {"class1": 0, "class2": 1}, False],
-        # 1510: ["Class", {1: 0, 2: 1}, True],
-        833: ["binaryClass", {"N": 0, "P": 1}, False],
+        849: ["binaryClass", {"N": 0, "P": 1}, False],
+        1547: ["Class", {"class1": 0, "class2": 1}, False],
+        1510: ["Class", {1: 0, 2: 1}, True],
+        833: ["binaryClass", {"N": 0, "P": 1}, False],  # - sgd plot with spi
         879: ["binaryClass", {"N": 0, "P": 1}, False],
     },
 }
@@ -178,4 +178,4 @@ def compare_with_different_classifiers(no_iters=5, test_size=0.2):
 
 
 if __name__ == "__main__":
-    compare_with_different_classifiers(1)
+    compare_with_different_classifiers(5)
