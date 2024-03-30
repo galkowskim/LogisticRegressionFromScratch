@@ -12,9 +12,10 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import balanced_accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
+from ucimlrepo import fetch_ucirepo
+
 from src.logistic_regression import LogisticRegression
 from src.prepare_datasets import prepare_data
-from ucimlrepo import fetch_ucirepo
 
 DATASETS = {
     "ucl": {
@@ -30,7 +31,7 @@ DATASETS = {
         849: ["binaryClass", {"N": 0, "P": 1}, False],
         1547: ["Class", {"class1": 0, "class2": 1}, False],
         1510: ["Class", {1: 0, 2: 1}, True],
-        833: ["binaryClass", {"N": 0, "P": 1}, False],  # - sgd plot with spi
+        833: ["binaryClass", {"N": 0, "P": 1}, False],  # - sgd plot with spikes
         879: ["binaryClass", {"N": 0, "P": 1}, False],
     },
 }
