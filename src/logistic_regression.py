@@ -29,7 +29,7 @@ class LogisticRegression:
         self.weights: Union[None, np.ndarray] = None
         self.batch_size: Union[None, int] = batch_size
         self.optimizer = optimizers[optimizer](learning_rate)
-        self.history = {"log_likelihood": [], "errors": []}
+        self.history = []
 
     def _add_interactions(self, X: Union[np.ndarray, pd.DataFrame]) -> np.ndarray:
         _, n_features = X.shape
@@ -90,15 +90,11 @@ class LogisticRegression:
                 break
 
             probabilities = self._sigmoid(np.dot(X, self.weights))
-            errors = self._cross_entropy(y, probabilities)
-            self.history["errors"].append(errors)
-            self.history["log_likelihood"].append(
-                self._log_likelihood(y, probabilities)
-            )
+            self.history.append(self._log_likelihood(y, probabilities))
         return
 
     def get_log_likelihood(self):
-        return self.history["log_likelihood"]
+        return self.history
 
     def fit(self, X: Union[np.ndarray, pd.DataFrame], y: np.ndarray) -> None:
         if not isinstance(X, np.ndarray):
