@@ -30,7 +30,7 @@ DATASETS = {
         849: ["binaryClass", {"N": 0, "P": 1}, False],
         1547: ["Class", {"class1": 0, "class2": 1}, False],
         1510: ["Class", {1: 0, 2: 1}, True],
-        833: ["binaryClass", {"N": 0, "P": 1}, False],  # - sgd plot with spi
+        833: ["binaryClass", {"N": 0, "P": 1}, False],  # - sgd plot with spikes
         879: ["binaryClass", {"N": 0, "P": 1}, False],
     },
 }
@@ -87,10 +87,10 @@ classifiers = {
 
 def plot_log_likelihood(no_iters, name, interactions, dataset_id, source, history):
     if interactions:
-        IfInteractions = "with_interactions"
+        if_interactions = "with_interactions"
     else:
-        IfInteractions = "without_interactions"
-    IfInteractions_title = IfInteractions.replace("_", " ")
+        if_interactions = "without_interactions"
+    if_interactions_title = if_interactions.replace("_", " ")
     if history is None:
         raise ValueError("Fit the model before plotting the log-likelihood values.")
 
@@ -110,10 +110,10 @@ def plot_log_likelihood(no_iters, name, interactions, dataset_id, source, histor
     plt.xlabel("Number of iterations")
     plt.ylabel("Log-Likelihood")
     plt.title(
-        f"Log-Likelihood values after each iteration for {name} {IfInteractions_title}"
+        f"Log-Likelihood values after each iteration for {name} {if_interactions_title}"
     )
 
-    directory = f"experiments/log_likelihood/{name}_{IfInteractions}"
+    directory = f"experiments/log_likelihood/{name}_{if_interactions}"
     if not os.path.exists(directory):
         os.makedirs(directory)
     plt.savefig(f"{directory}/{source}_{dataset_id}.png")
@@ -172,7 +172,6 @@ def compare_with_different_classifiers(no_iters=5, test_size=0.2):
                         log_likelihood_history,
                     )
             results = pd.DataFrame(results)
-            print(results)
             results.to_csv(f"experiments/results/{source}_{id}.csv", index=False)
     return
 
