@@ -1,6 +1,5 @@
 from typing import Dict, Union
 
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from src.optimization_algorithms import IRLS, SGD, AdamOptim
@@ -30,7 +29,7 @@ class LogisticRegression:
         self.weights: Union[None, np.ndarray] = None
         self.batch_size: Union[None, int] = batch_size
         self.optimizer = optimizers[optimizer](learning_rate)
-        self.history = []
+        self.history = {"log_likelihood": [], "errors": []}
 
     def _add_interactions(self, X: Union[np.ndarray, pd.DataFrame]) -> np.ndarray:
         _, n_features = X.shape
@@ -91,17 +90,15 @@ class LogisticRegression:
                 break
 
             probabilities = self._sigmoid(np.dot(X, self.weights))
-            self.history.append(self._log_likelihood(y, probabilities))
+            errors = self._cross_entropy(y, probabilities)
+            self.history["errors"].append(errors)
+            self.history["log_likelihood"].append(
+                self._log_likelihood(y, probabilities)
+            )
         return
 
-    def plot_log_likelihood(self):
-        if self.history is None:
-            raise ValueError("Fit the model before plotting the log-likelihood values.")
-        plt.plot(range(len(self.history)), self.history)
-        plt.xlabel("Number of iterations")
-        plt.ylabel("Log-Likelihood")
-        plt.title("Log-Likelihood values after each iteration")
-        plt.show()
+    def get_log_likelihood(self):
+        return self.history["log_likelihood"]
 
     def fit(self, X: Union[np.ndarray, pd.DataFrame], y: np.ndarray) -> None:
         if not isinstance(X, np.ndarray):
