@@ -2,6 +2,7 @@ from typing import Dict, Union
 
 import numpy as np
 import pandas as pd
+import plotly.graph_objects as go
 from tqdm import tqdm
 
 from src.optimization_algorithms import IRLS, SGD, AdamOptim
@@ -86,12 +87,12 @@ class LogisticRegression:
                     probabilities,
                 )
 
+            probabilities = self._sigmoid(np.dot(X, self.weights))
+            self.history.append(self._log_likelihood(y, probabilities))
+
             if np.linalg.norm(self.weights - old_weights) < self.tolerance:
                 print("Stopping criteria reached after ", _ + 1, " iterations")
                 break
-
-            probabilities = self._sigmoid(np.dot(X, self.weights))
-            self.history.append(self._log_likelihood(y, probabilities))
         return
 
     def get_log_likelihood(self):
