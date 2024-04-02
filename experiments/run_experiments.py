@@ -1,106 +1,181 @@
+import os
+
+import matplotlib.pyplot as plt
 import numpy as np
+import openml
 import pandas as pd
-from sklearn.discriminant_analysis import (LinearDiscriminantAnalysis,
-                                           QuadraticDiscriminantAnalysis)
+from sklearn.discriminant_analysis import (
+    LinearDiscriminantAnalysis,
+    QuadraticDiscriminantAnalysis,
+)
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import balanced_accuracy_score
 from sklearn.model_selection import train_test_split
-# from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
+from ucimlrepo import fetch_ucirepo
 
 from src.logistic_regression import LogisticRegression
-from src.prepare_datasets import add_interactions, prepare_data
+from src.prepare_datasets import prepare_data
 
-datasets = {
-    1462: "Class",
-    871: "binaryClass",
-    885: "binaryClass",
-    1120: "class:",
-    994: "binaryClass",
-    1021: "binaryClass",
-    847: "binaryClass",
+DATASETS = {
+    "ucl": {
+        # big
+        151: ["class", {"R": 1, "M": 0}, False],
+    },
+    "openml": {
+        # small
+        974: ["binaryClass", {"N": 0, "P": 1}, False],
+        969: ["binaryClass", {"N": 0, "P": 1}, False],  # iris
+        1462: ["Class", {1: 0, 2: 1}, True],
+        # big
+        849: ["binaryClass", {"N": 0, "P": 1}, False],
+        1547: ["Class", {"class1": 0, "class2": 1}, False],
+        1510: ["Class", {1: 0, 2: 1}, True],
+        833: ["binaryClass", {"N": 0, "P": 1}, False],  # - sgd plot with spikes
+        879: ["binaryClass", {"N": 0, "P": 1}, False],
+    },
 }
 
 classifiers = {
-    "Logistic Regression (SGD) with interactions": LogisticRegression(
-        add_interactions=True, learning_rate=0.01, max_iter=1000, tolerance=1e-10
-    ),
-    "Logistic Regression (SGD)": LogisticRegression(
-        add_interactions=False, learning_rate=0.01, max_iter=100, tolerance=1e-10
-    ),
-    "Linear Discriminant Analysis": LinearDiscriminantAnalysis(),
-    "Quadratic Discriminant Analysis": QuadraticDiscriminantAnalysis(),
-    "Decision Tree": DecisionTreeClassifier(),
-    "Random Forest": RandomForestClassifier(),
+    "Logistic Regression (SGD) with interactions": {
+        "add_interactions": True,
+        "learning_rate": 0.001,
+        "max_iter": 500,
+        "tolerance": 1e-7,
+        "optimizer": "sgd",
+    },
+    "Logistic Regression (SGD)": {
+        "add_interactions": False,
+        "learning_rate": 0.001,
+        "max_iter": 500,
+        "tolerance": 1e-7,
+        "optimizer": "sgd",
+    },
+    "Logistic Regression (Adam) with interactions": {
+        "add_interactions": True,
+        "learning_rate": 0.01,
+        "max_iter": 500,
+        "tolerance": 1e-7,
+        "optimizer": "adam",
+    },
+    "Logistic Regression (Adam)": {
+        "add_interactions": False,
+        "learning_rate": 0.01,
+        "max_iter": 500,
+        "tolerance": 1e-7,
+        "optimizer": "adam",
+    },
+    "Logistic Regression (IRLS) with interactions": {
+        "add_interactions": True,
+        "learning_rate": 0.01,
+        "max_iter": 500,
+        "tolerance": 1e-7,
+        "optimizer": "irls",
+    },
+    "Logistic Regression (IRLS)": {
+        "add_interactions": False,
+        "learning_rate": 0.01,
+        "max_iter": 500,
+        "tolerance": 1e-7,
+        "optimizer": "irls",
+    },
+    "Linear Discriminant Analysis": LinearDiscriminantAnalysis,
+    "Quadratic Discriminant Analysis": QuadraticDiscriminantAnalysis,
+    "Decision Tree": DecisionTreeClassifier,
+    "Random Forest": RandomForestClassifier,
 }
 
 
-def compare_with_different_classifiers():
+def plot_log_likelihood(no_iters, name, interactions, dataset_id, source, history):
+    if interactions:
+        if_interactions = "with_interactions"
+    else:
+        if_interactions = "without_interactions"
+    if_interactions_title = if_interactions.replace("_", " ")
+    if history is None:
+        raise ValueError("Fit the model before plotting the log-likelihood values.")
+
+    mean_values = np.mean(np.array(history), axis=0)
+
+    plt.figure()
+    for i in range(no_iters):
+        plt.plot(range(len(history[i])), history[i], color="grey", alpha=0.7)
+    plt.plot(
+        range(len(mean_values)),
+        mean_values,
+        color="red",
+        alpha=0.9,
+        label="Mean",
+    )
+    plt.legend()
+    plt.xlabel("Number of iterations")
+    plt.ylabel("Log-Likelihood")
+    plt.title(
+        f"Log-Likelihood values after each iteration for {name} {if_interactions_title}"
+    )
+
+    directory = f"experiments/log_likelihood/{name}_{if_interactions}"
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    plt.savefig(f"{directory}/{source}_{dataset_id}.png")
+
+
+def compare_with_different_classifiers(no_iters=5, test_size=0.2):
     # Compare the classification performance of logistic regression (try all 3 methods: IWLS, SGD, ADAM) and LDA, QDA, Decision tree and Random Forest.
-    results = []
+    for source, datasets in DATASETS.items():
+        for id, dataset in datasets.items():
+            results = []
+            print(f"{source} dataset, id={id}:")
+            target_column, mapping, cast_to_int = dataset
+            if source == "ucl":
+                dataset = fetch_ucirepo(id=id).data
+                X = dataset.features
+                y = dataset.targets
+                df = pd.concat([X, y], axis=1)
+            else:
+                df = openml.datasets.get_dataset(id).get_data()[0]
+            X, y = prepare_data(df, cast_to_int, mapping, target_column)
+            for name, params_or_model in list(classifiers.items()):
+                accuracy = []
+                log_likelihood_history = []
+                for j in range(no_iters):
+                    if "Logistic Regression" in name:
+                        model = LogisticRegression(**params_or_model)
+                    else:
+                        model = params_or_model()
+                    print(f"Fitting model: {name}")
 
-    for i, (dataset_number, target_column) in enumerate(datasets.items(), start=1):
-        X, y = prepare_data(dataset_number, target_column)
-        print(f"Dataset {i}:")
-
-        for name, model in list(classifiers.items())[1:]:
-            accuracy = []
-            for split in np.arange(0.15, 0.41, 0.05):
-                X_train, X_test, y_train, y_test = train_test_split(
-                    X, y, test_size=split, random_state=None
-                )
-
-                model.fit(X_train, y_train)
-                y_pred = model.predict(X_test)
-                accuracy.append(balanced_accuracy_score(y_test, y_pred))
-            avg_accuracy = np.mean(accuracy)
-            # print(f'Avg of balanced_accuracy for {name} = {avg_accuracy:.3f}')
-            results.append(
-                {
-                    "Dataset": f"Dataset_{i}",
-                    "Classifier": name,
-                    "Avg_Balanced_Accuracy": avg_accuracy,
-                }
-            )
-
-    return pd.DataFrame(results)
-
-
-def compare_w_wo_interactions():
-    # for small datasets, compare logistic regression with and without interactions
-    results = []
-
-    for i, (dataset_number, target_column) in enumerate(
-        list(datasets.items())[:3], start=1
-    ):
-        X, y = prepare_data(dataset_number, target_column)
-        print(f"Dataset {i}:")
-
-        for name, model in list(classifiers.items())[:2]:
-            accuracy = []
-            if model.add_interactions == True:
-                X = add_interactions(X)
-            X_train, X_test, y_train, y_test = train_test_split(
-                X, y, test_size=0.25, random_state=None
-            )
-
-            model.fit(X_train, y_train)
-            y_pred = model.predict(X_test)
-            accuracy = balanced_accuracy_score(y_test, y_pred)
-            # print(f'Balanced_accuracy for {name} = {accuracy:.3f}')
-            results.append(
-                {
-                    "Dataset": f"Dataset_{i}",
-                    "Classifier": name,
-                    "Balanced_Accuracy": accuracy,
-                }
-            )
-
-    return pd.DataFrame(results)
+                    X_train, X_test, y_train, y_test = train_test_split(
+                        X, y, test_size=test_size, random_state=j
+                    )
+                    np.random.seed(j)
+                    model.fit(X_train, y_train)
+                    y_pred = model.predict(X_test)
+                    accuracy = balanced_accuracy_score(y_test, y_pred)
+                    results.append(
+                        {
+                            "Dataset": f"{source}_{id}",
+                            "Run": j + 1,
+                            "Classifier": name,
+                            "Balanced_Accuracy": accuracy,
+                        }
+                    )
+                    if "Logistic Regression" in name:
+                        log_history = model.get_log_likelihood()
+                        log_likelihood_history.append(log_history)
+                if "Logistic Regression" in name:
+                    plot_log_likelihood(
+                        no_iters,
+                        params_or_model["optimizer"],
+                        params_or_model["add_interactions"],
+                        id,
+                        source,
+                        log_likelihood_history,
+                    )
+            results = pd.DataFrame(results)
+            results.to_csv(f"experiments/results/{source}_{id}.csv", index=False)
+    return
 
 
 if __name__ == "__main__":
-    results1 = compare_with_different_classifiers()
-    print(results1)
-    results2 = compare_w_wo_interactions()
-    print(results2)
+    compare_with_different_classifiers(5)

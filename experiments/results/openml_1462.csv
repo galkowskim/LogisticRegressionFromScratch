@@ -1,0 +1,51 @@
+Dataset,Run,Classifier,Balanced_Accuracy
+openml_1462,1,Logistic Regression (SGD) with interactions,1.0
+openml_1462,2,Logistic Regression (SGD) with interactions,1.0
+openml_1462,3,Logistic Regression (SGD) with interactions,1.0
+openml_1462,4,Logistic Regression (SGD) with interactions,1.0
+openml_1462,5,Logistic Regression (SGD) with interactions,1.0
+openml_1462,1,Logistic Regression (SGD),0.9936305732484076
+openml_1462,2,Logistic Regression (SGD),0.9925779984886106
+openml_1462,3,Logistic Regression (SGD),0.9895104895104896
+openml_1462,4,Logistic Regression (SGD),0.9970238095238095
+openml_1462,5,Logistic Regression (SGD),0.9968354430379747
+openml_1462,1,Logistic Regression (Adam) with interactions,1.0
+openml_1462,2,Logistic Regression (Adam) with interactions,1.0
+openml_1462,3,Logistic Regression (Adam) with interactions,1.0
+openml_1462,4,Logistic Regression (Adam) with interactions,0.9970238095238095
+openml_1462,5,Logistic Regression (Adam) with interactions,1.0
+openml_1462,1,Logistic Regression (Adam),0.9904458598726115
+openml_1462,2,Logistic Regression (Adam),0.9830238583612221
+openml_1462,3,Logistic Regression (Adam),0.9720279720279721
+openml_1462,4,Logistic Regression (Adam),0.9910714285714286
+openml_1462,5,Logistic Regression (Adam),0.9873417721518987
+openml_1462,1,Logistic Regression (IRLS) with interactions,0.9808917197452229
+openml_1462,2,Logistic Regression (IRLS) with interactions,0.9808917197452229
+openml_1462,3,Logistic Regression (IRLS) with interactions,0.9720279720279721
+openml_1462,4,Logistic Regression (IRLS) with interactions,0.9880952380952381
+openml_1462,5,Logistic Regression (IRLS) with interactions,0.9810126582278481
+openml_1462,1,Logistic Regression (IRLS),0.9777070063694268
+openml_1462,2,Logistic Regression (IRLS),0.9745222929936306
+openml_1462,3,Logistic Regression (IRLS),0.9615384615384616
+openml_1462,4,Logistic Regression (IRLS),0.9851190476190477
+openml_1462,5,Logistic Regression (IRLS),0.9683544303797469
+openml_1462,1,Linear Discriminant Analysis,0.9777070063694268
+openml_1462,2,Linear Discriminant Analysis,0.9745222929936306
+openml_1462,3,Linear Discriminant Analysis,0.9615384615384616
+openml_1462,4,Linear Discriminant Analysis,0.9851190476190477
+openml_1462,5,Linear Discriminant Analysis,0.9588607594936709
+openml_1462,1,Quadratic Discriminant Analysis,0.9904458598726115
+openml_1462,2,Quadratic Discriminant Analysis,0.9808917197452229
+openml_1462,3,Quadratic Discriminant Analysis,0.9720279720279721
+openml_1462,4,Quadratic Discriminant Analysis,0.9910714285714286
+openml_1462,5,Quadratic Discriminant Analysis,0.9841772151898734
+openml_1462,1,Decision Tree,0.9936305732484076
+openml_1462,2,Decision Tree,0.9745492820900357
+openml_1462,3,Decision Tree,0.9787296037296037
+openml_1462,4,Decision Tree,0.9817256341789051
+openml_1462,5,Decision Tree,0.9968354430379747
+openml_1462,1,Random Forest,0.9893932851128144
+openml_1462,2,Random Forest,0.9968152866242038
+openml_1462,3,Random Forest,0.986013986013986
+openml_1462,4,Random Forest,0.9910714285714286
+openml_1462,5,Random Forest,1.0

@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-from optimization_algorithms import IRLS, SGD, AdamOptim
+from src.optimization_algorithms import IRLS, SGD, AdamOptim
 
 optimizers: Dict[str, Union[SGD, AdamOptim, IRLS]] = {
     "sgd": SGD,
@@ -30,6 +30,7 @@ class LogisticRegression:
         self.weights: Union[None, np.ndarray] = None
         self.batch_size: Union[None, int] = batch_size
         self.optimizer = optimizers[optimizer](learning_rate)
+        self.history = []
 
     def _add_interactions(self, X: Union[np.ndarray, pd.DataFrame]) -> np.ndarray:
         _, n_features = X.shape
@@ -46,8 +47,12 @@ class LogisticRegression:
     def _sigmoid(self, z: np.ndarray) -> np.ndarray:
         return 1 / (1 + np.exp(-z))
 
+    def _log_likelihood(self, y: np.ndarray, p: np.ndarray) -> float:
+        p = np.clip(p, 1e-15, 1 - 1e-15)
+        return np.sum(y * np.log(p) + (1 - y) * np.log(1 - p)) / len(y)
+
     def _cross_entropy(self, y: np.ndarray, p: np.ndarray) -> float:
-        return -np.sum(y * np.log(p) + (1 - y) * np.log(1 - p))
+        return -self._log_likelihood(y, p)
 
     def _optimize(self, X: np.ndarray, y: np.ndarray) -> None:
 
@@ -84,7 +89,13 @@ class LogisticRegression:
             if np.linalg.norm(self.weights - old_weights) < self.tolerance:
                 print("Stopping criteria reached after ", _ + 1, " iterations")
                 break
+
+            probabilities = self._sigmoid(np.dot(X, self.weights))
+            self.history.append(self._log_likelihood(y, probabilities))
         return
+
+    def get_log_likelihood(self):
+        return self.history
 
     def fit(self, X: Union[np.ndarray, pd.DataFrame], y: np.ndarray) -> None:
         if not isinstance(X, np.ndarray):

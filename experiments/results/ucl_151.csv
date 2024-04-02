@@ -1,0 +1,51 @@
+Dataset,Run,Classifier,Balanced_Accuracy
+ucl_151,1,Logistic Regression (SGD) with interactions,0.8095238095238095
+ucl_151,2,Logistic Regression (SGD) with interactions,0.7636363636363637
+ucl_151,3,Logistic Regression (SGD) with interactions,0.8181818181818181
+ucl_151,4,Logistic Regression (SGD) with interactions,0.7860411899313502
+ucl_151,5,Logistic Regression (SGD) with interactions,0.8223529411764705
+ucl_151,1,Logistic Regression (SGD),0.7380952380952381
+ucl_151,2,Logistic Regression (SGD),0.7681818181818182
+ucl_151,3,Logistic Regression (SGD),0.7704545454545455
+ucl_151,4,Logistic Regression (SGD),0.6899313501144164
+ucl_151,5,Logistic Regression (SGD),0.7729411764705882
+ucl_151,1,Logistic Regression (Adam) with interactions,0.7857142857142857
+ucl_151,2,Logistic Regression (Adam) with interactions,0.7431818181818182
+ucl_151,3,Logistic Regression (Adam) with interactions,0.8363636363636364
+ucl_151,4,Logistic Regression (Adam) with interactions,0.7471395881006865
+ucl_151,5,Logistic Regression (Adam) with interactions,0.9011764705882352
+ucl_151,1,Logistic Regression (Adam),0.7857142857142857
+ucl_151,2,Logistic Regression (Adam),0.740909090909091
+ucl_151,3,Logistic Regression (Adam),0.8136363636363637
+ucl_151,4,Logistic Regression (Adam),0.6819221967963387
+ucl_151,5,Logistic Regression (Adam),0.8223529411764705
+ucl_151,1,Logistic Regression (IRLS) with interactions,0.7619047619047619
+ucl_151,2,Logistic Regression (IRLS) with interactions,0.7681818181818182
+ucl_151,3,Logistic Regression (IRLS) with interactions,0.740909090909091
+ucl_151,4,Logistic Regression (IRLS) with interactions,0.9038901601830663
+ucl_151,5,Logistic Regression (IRLS) with interactions,0.8129411764705883
+ucl_151,1,Logistic Regression (IRLS),0.7619047619047619
+ucl_151,2,Logistic Regression (IRLS),0.6454545454545455
+ucl_151,3,Logistic Regression (IRLS),0.8363636363636364
+ucl_151,4,Logistic Regression (IRLS),0.7425629290617849
+ucl_151,5,Logistic Regression (IRLS),0.7623529411764706
+ucl_151,1,Linear Discriminant Analysis,0.8095238095238095
+ucl_151,2,Linear Discriminant Analysis,0.7386363636363636
+ucl_151,3,Linear Discriminant Analysis,0.8363636363636364
+ucl_151,4,Linear Discriminant Analysis,0.7906178489702517
+ucl_151,5,Linear Discriminant Analysis,0.7129411764705882
+ucl_151,1,Quadratic Discriminant Analysis,0.8809523809523809
+ucl_151,2,Quadratic Discriminant Analysis,0.8386363636363636
+ucl_151,3,Quadratic Discriminant Analysis,0.6977272727272728
+ucl_151,4,Quadratic Discriminant Analysis,0.834096109839817
+ucl_151,5,Quadratic Discriminant Analysis,0.7917647058823529
+ucl_151,1,Decision Tree,0.6666666666666666
+ucl_151,2,Decision Tree,0.675
+ucl_151,3,Decision Tree,0.6681818181818182
+ucl_151,4,Decision Tree,0.72883295194508
+ucl_151,5,Decision Tree,0.723529411764706
+ucl_151,1,Random Forest,0.8809523809523809
+ucl_151,2,Random Forest,0.7931818181818182
+ucl_151,3,Random Forest,0.7909090909090909
+ucl_151,4,Random Forest,0.8775743707093822
+ucl_151,5,Random Forest,0.8223529411764705

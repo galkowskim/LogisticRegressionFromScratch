@@ -1,0 +1,51 @@
+Dataset,Run,Classifier,Balanced_Accuracy
+openml_849,1,Logistic Regression (SGD) with interactions,0.7099709970997099
+openml_849,2,Logistic Regression (SGD) with interactions,0.7099709970997099
+openml_849,3,Logistic Regression (SGD) with interactions,0.674857371634471
+openml_849,4,Logistic Regression (SGD) with interactions,0.7135854341736695
+openml_849,5,Logistic Regression (SGD) with interactions,0.7290244881573664
+openml_849,1,Logistic Regression (SGD),0.8297829782978298
+openml_849,2,Logistic Regression (SGD),0.8100810081008101
+openml_849,3,Logistic Regression (SGD),0.7694925432889601
+openml_849,4,Logistic Regression (SGD),0.7995198079231692
+openml_849,5,Logistic Regression (SGD),0.842934564431955
+openml_849,1,Logistic Regression (Adam) with interactions,0.635013501350135
+openml_849,2,Logistic Regression (Adam) with interactions,0.6702670267026702
+openml_849,3,Logistic Regression (Adam) with interactions,0.6242117906115504
+openml_849,4,Logistic Regression (Adam) with interactions,0.6986794717887155
+openml_849,5,Logistic Regression (Adam) with interactions,0.6593737454837414
+openml_849,1,Logistic Regression (Adam),0.8297829782978298
+openml_849,2,Logistic Regression (Adam),0.8100810081008101
+openml_849,3,Logistic Regression (Adam),0.7746471824642178
+openml_849,4,Logistic Regression (Adam),0.7995198079231692
+openml_849,5,Logistic Regression (Adam),0.842934564431955
+openml_849,1,Logistic Regression (IRLS) with interactions,0.7247224722472247
+openml_849,2,Logistic Regression (IRLS) with interactions,0.7053205320532053
+openml_849,3,Logistic Regression (IRLS) with interactions,0.6442298068261436
+openml_849,4,Logistic Regression (IRLS) with interactions,0.7096838735494198
+openml_849,5,Logistic Regression (IRLS) with interactions,0.7402649538338016
+openml_849,1,Logistic Regression (IRLS),0.8398839883988398
+openml_849,2,Logistic Regression (IRLS),0.804930493049305
+openml_849,3,Logistic Regression (IRLS),0.7691922730457412
+openml_849,4,Logistic Regression (IRLS),0.7944177671068426
+openml_849,5,Logistic Regression (IRLS),0.842934564431955
+openml_849,1,Linear Discriminant Analysis,0.8349334933493349
+openml_849,2,Linear Discriminant Analysis,0.804930493049305
+openml_849,3,Linear Discriminant Analysis,0.7691922730457412
+openml_849,4,Linear Discriminant Analysis,0.7895158063225289
+openml_849,5,Linear Discriminant Analysis,0.842934564431955
+openml_849,1,Quadratic Discriminant Analysis,0.8047304730473047
+openml_849,2,Quadratic Discriminant Analysis,0.7953295329532953
+openml_849,3,Quadratic Discriminant Analysis,0.7712941647482734
+openml_849,4,Quadratic Discriminant Analysis,0.8240296118447379
+openml_849,5,Quadratic Discriminant Analysis,0.8152348454435969
+openml_849,1,Decision Tree,0.7696769676967696
+openml_849,2,Decision Tree,0.7953295329532953
+openml_849,3,Decision Tree,0.7889100190171154
+openml_849,4,Decision Tree,0.7648059223689476
+openml_849,5,Decision Tree,0.769771176234444
+openml_849,1,Random Forest,0.8647364736473647
+openml_849,2,Random Forest,0.8655365536553656
+openml_849,3,Random Forest,0.8501651486337704
+openml_849,4,Random Forest,0.8697478991596639
+openml_849,5,Random Forest,0.8465475712565236
