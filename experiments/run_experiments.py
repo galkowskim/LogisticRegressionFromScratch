@@ -12,9 +12,10 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import balanced_accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
+from ucimlrepo import fetch_ucirepo
+
 from src.logistic_regression import LogisticRegression
 from src.prepare_datasets import prepare_data
-from ucimlrepo import fetch_ucirepo
 
 DATASETS = {
     "ucl": {
