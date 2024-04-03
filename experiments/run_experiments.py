@@ -12,9 +12,10 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import balanced_accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
+from ucimlrepo import fetch_ucirepo
+
 from src.logistic_regression import LogisticRegression
 from src.prepare_datasets import prepare_data
-from ucimlrepo import fetch_ucirepo
 
 DATASETS = {
     "ucl": {
@@ -211,7 +212,6 @@ def compare_with_different_classifiers(no_iters=5, test_size=0.2):
                         }
                     )
                     if "Logistic Regression" in name:
-
                         optimizer = params_or_model["optimizer"]
 
                         log_history = model.get_log_likelihood()

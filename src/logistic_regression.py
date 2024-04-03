@@ -56,7 +56,6 @@ class LogisticRegression:
         return -self._log_likelihood(y, p)
 
     def _optimize(self, X: np.ndarray, y: np.ndarray) -> None:
-
         if isinstance(self.optimizer, SGD):
             batch_size = 1
         else:
