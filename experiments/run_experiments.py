@@ -41,42 +41,42 @@ classifiers = {
         "add_interactions": True,
         "learning_rate": 0.001,
         "max_iter": 500,
-        "tolerance": 1e-7,
+        "tolerance": 1e-5,
         "optimizer": "sgd",
     },
     "Logistic Regression (SGD)": {
         "add_interactions": False,
         "learning_rate": 0.001,
         "max_iter": 500,
-        "tolerance": 1e-7,
+        "tolerance": 1e-5,
         "optimizer": "sgd",
     },
     "Logistic Regression (Adam) with interactions": {
         "add_interactions": True,
         "learning_rate": 0.01,
         "max_iter": 500,
-        "tolerance": 1e-7,
+        "tolerance": 1e-5,
         "optimizer": "adam",
     },
     "Logistic Regression (Adam)": {
         "add_interactions": False,
         "learning_rate": 0.01,
         "max_iter": 500,
-        "tolerance": 1e-7,
+        "tolerance": 1e-5,
         "optimizer": "adam",
     },
     "Logistic Regression (IRLS) with interactions": {
         "add_interactions": True,
         "learning_rate": 0.01,
         "max_iter": 500,
-        "tolerance": 1e-7,
+        "tolerance": 1e-5,
         "optimizer": "irls",
     },
     "Logistic Regression (IRLS)": {
         "add_interactions": False,
         "learning_rate": 0.01,
         "max_iter": 500,
-        "tolerance": 1e-7,
+        "tolerance": 1e-5,
         "optimizer": "irls",
     },
     "Linear Discriminant Analysis": LinearDiscriminantAnalysis,
@@ -86,38 +86,89 @@ classifiers = {
 }
 
 
-def plot_log_likelihood(no_iters, name, interactions, dataset_id, source, history):
-    if interactions:
-        if_interactions = "with_interactions"
-    else:
-        if_interactions = "without_interactions"
-    if_interactions_title = if_interactions.replace("_", " ")
-    if history is None:
-        raise ValueError("Fit the model before plotting the log-likelihood values.")
-
-    mean_values = np.mean(np.array(history), axis=0)
-
+def plot_log_likelihood(
+    dataset_id,
+    source,
+    log_likelihood_history_sgd,
+    log_likelihood_history_adam,
+    log_likelihood_history_irls,
+):
+    max_iters_sgd = max(len(history) for history in log_likelihood_history_sgd)
+    max_iters_adam = max(len(history) for history in log_likelihood_history_adam)
+    max_iters_irls = max(len(history) for history in log_likelihood_history_irls)
     plt.figure()
-    for i in range(no_iters):
-        plt.plot(range(len(history[i])), history[i], color="grey", alpha=0.7)
-    plt.plot(
-        range(len(mean_values)),
-        mean_values,
-        color="red",
-        alpha=0.9,
-        label="Mean",
+    for history in log_likelihood_history_sgd:
+        plt.plot(
+            range(len(history)),
+            history,
+            color="blue",
+            alpha=0.2,
+        )
+    for history in log_likelihood_history_adam:
+        plt.plot(
+            range(len(history)),
+            history,
+            color="green",
+            alpha=0.2,
+        )
+    for history in log_likelihood_history_irls:
+        plt.plot(
+            range(len(history)),
+            history,
+            color="red",
+            alpha=0.2,
+        )
+
+    avg_sgd = np.nanmean(
+        [
+            history + [np.nan] * (max_iters_sgd - len(history))
+            for history in log_likelihood_history_sgd
+        ],
+        axis=0,
     )
+    avg_adam = np.nanmean(
+        [
+            history + [np.nan] * (max_iters_adam - len(history))
+            for history in log_likelihood_history_adam
+        ],
+        axis=0,
+    )
+    avg_irls = np.nanmean(
+        [
+            history + [np.nan] * (max_iters_irls - len(history))
+            for history in log_likelihood_history_irls
+        ],
+        axis=0,
+    )
+
+    plt.plot(
+        range(len(avg_sgd)),
+        avg_sgd,
+        color="blue",
+        label="Average LR (SGD)",
+    )
+    plt.plot(
+        range(len(avg_adam)),
+        avg_adam,
+        color="green",
+        label="Average LR (Adam)",
+    )
+    plt.plot(
+        range(len(avg_irls)),
+        avg_irls,
+        color="red",
+        label="Average LR (IRLS)",
+    )
+
     plt.legend()
     plt.xlabel("Number of iterations")
     plt.ylabel("Log-Likelihood")
-    plt.title(
-        f"Log-Likelihood values after each iteration for {name} {if_interactions_title}"
-    )
-
-    directory = f"experiments/log_likelihood/{name}_{if_interactions}"
+    plt.title(f"Log-Likelihood values after each iteration for Dataset Id={dataset_id}")
+    plt.ylim(-0.8, 0)
+    directory = f"experiments/log_likelihood/{source}_{dataset_id}"
     if not os.path.exists(directory):
         os.makedirs(directory)
-    plt.savefig(f"{directory}/{source}_{dataset_id}.png")
+    plt.savefig(f"{directory}/log_likelihood_{source}_{dataset_id}.png")
 
 
 def compare_with_different_classifiers(no_iters=5, test_size=0.2):
@@ -135,9 +186,9 @@ def compare_with_different_classifiers(no_iters=5, test_size=0.2):
             else:
                 df = openml.datasets.get_dataset(id).get_data()[0]
             X, y = prepare_data(df, cast_to_int, mapping, target_column)
+            log_likelihood_history = {"adam": [], "sgd": [], "irls": []}
             for name, params_or_model in list(classifiers.items()):
                 accuracy = []
-                log_likelihood_history = []
                 for j in range(no_iters):
                     if "Logistic Regression" in name:
                         model = LogisticRegression(**params_or_model)
@@ -161,17 +212,17 @@ def compare_with_different_classifiers(no_iters=5, test_size=0.2):
                         }
                     )
                     if "Logistic Regression" in name:
+                        optimizer = params_or_model["optimizer"]
+
                         log_history = model.get_log_likelihood()
-                        log_likelihood_history.append(log_history)
-                if "Logistic Regression" in name:
-                    plot_log_likelihood(
-                        no_iters,
-                        params_or_model["optimizer"],
-                        params_or_model["add_interactions"],
-                        id,
-                        source,
-                        log_likelihood_history,
-                    )
+                        log_likelihood_history[optimizer].append(log_history)
+            plot_log_likelihood(
+                id,
+                source,
+                log_likelihood_history["sgd"],
+                log_likelihood_history["adam"],
+                log_likelihood_history["irls"],
+            )
             results = pd.DataFrame(results)
             results.to_csv(f"experiments/results/{source}_{id}.csv", index=False)
     return
