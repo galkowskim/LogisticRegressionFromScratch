@@ -12,10 +12,9 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import balanced_accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
-from ucimlrepo import fetch_ucirepo
-
 from src.logistic_regression import LogisticRegression
 from src.prepare_datasets import prepare_data
+from ucimlrepo import fetch_ucirepo
 
 DATASETS = {
     "ucl": {
@@ -165,10 +164,10 @@ def plot_log_likelihood(
     plt.ylabel("Log-Likelihood")
     plt.title(f"Log-Likelihood values after each iteration for Dataset Id={dataset_id}")
     plt.ylim(-0.8, 0)
-    directory = f"experiments/log_likelihood/{source}_{dataset_id}"
+    directory = f"experiments/log_likelihood"
     if not os.path.exists(directory):
         os.makedirs(directory)
-    plt.savefig(f"{directory}/log_likelihood_{source}_{dataset_id}.png")
+    plt.savefig(f"{directory}/{source}_{dataset_id}.png")
 
 
 def compare_with_different_classifiers(no_iters=5, test_size=0.2):
