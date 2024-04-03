@@ -165,7 +165,7 @@ def plot_log_likelihood(
     plt.ylabel("Log-Likelihood")
     plt.title(f"Log-Likelihood values after each iteration for Dataset Id={dataset_id}")
     plt.ylim(-0.8, 0)
-    directory = f"experiments/log_likelihood"
+    directory = "experiments/log_likelihood"
     if not os.path.exists(directory):
         os.makedirs(directory)
     plt.savefig(f"{directory}/{source}_{dataset_id}.png")
